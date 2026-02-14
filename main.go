@@ -1,7 +1,11 @@
+package main
+
+import "sudoku/functions"
+
 func main() {
 
 	// First, the code checks for correct input through the CheckInput function
-	if CheckInput(os.Args) == false {
+	if functions.CheckInput(os.Args) == false {
 		fmt.Println("Error: Wrong Input") 
 		return
 	}
@@ -27,6 +31,11 @@ func main() {
 				
 		}
 	}
+
+	if !functions.IsValidGrid(&board) {
+		fmt.Println ("Error: Wrong Input")
+	}
+	
 }
 
 /* Print example.
