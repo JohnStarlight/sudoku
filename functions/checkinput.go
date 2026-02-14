@@ -3,7 +3,7 @@ package functions
 func CheckInput(args []string) bool {
 
 //os.Args[0] is the name of the program. The length of arguments have to be exactly 10 in order for the rows to be 9
-	if len(agrs) != 10 {
+	if len(args) != 10 {
 
 		return false
 
