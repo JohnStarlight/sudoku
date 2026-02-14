@@ -1,1 +1,4 @@
 package functions
+
+func solver() {
+}
