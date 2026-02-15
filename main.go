@@ -5,12 +5,25 @@ import (
 	"os"
 	"strconv"
 	"strings"
+
 	"sudoku/functions"
 )
 
 func main() {
 	if functions.CheckInput(os.Args) == false {
-		fmt.Println("Error: Wrong Input. The correct format is either 9 positional rows or a combination of explicit row assignments (e.g. '1=53..7....') and positional rows, with a total of 9 rows. Each row must be 9 characters long, containing digits '1'-'9' or '.' for empty cells.")
+		fmt.Println(`Error: Wrong input.
+		
+Please enter up to 9 Sudoku rows.
+Each row must have exactly 9 characters.
+Use numbers 1-9 for known cells and . for empty cells.
+		
+You can write rows normally:
+534.7....
+		
+Or set a specific row:
+1=534.7....
+		
+You may also combine both methods`)
 		return
 	}
 
@@ -32,16 +45,29 @@ func main() {
 		if strings.Contains(arg, "=") {
 			parts := strings.SplitN(arg, "=", 2)
 			if len(parts) != 2 {
-				fmt.Println("Error: Wrong Input. The correct format for specific row assignment is 'row=XXXXXXXXX' where row is 1-9 and X is a digit or '.'")
+				fmt.Println(`Error: Wrong input.
+
+To set a specific row, use this format:
+RowNumber=RowContent
+
+Example:
+1=53..7....
+
+Row number must be between 1 and 9.
+Each row must contain 9 characters.
+Use numbers 1-9 for known cells and . for empty cells.`)
 				return
 			}
 			idx, err := strconv.Atoi(parts[0])
 			if err != nil || idx < 1 || idx > 9 {
-				fmt.Println("Error: Wrong Input. Row index must be an integer between 1 and 9.")
+				fmt.Println(`Error: Wrong input.
+
+Row number must be between 1 and 9.
+Example: 1=53..7....`)
 				return
 			}
 			if rowsFilled[idx-1] {
-				fmt.Println("Error: Wrong Input. Duplicate row assignment for row", idx)
+				fmt.Println("Error: Wrong input. Row", idx, "is already set. Each row can only be entered once.")
 				return
 			}
 			rowStr := parts[1]
@@ -73,17 +99,20 @@ func main() {
 		}
 	}
 	if posIdx != len(positional) {
-		fmt.Println("Error: Wrong Input. Too many positional rows provided.")
+		fmt.Println("Error: Wrong Input. You entered more than 9 rows. Maximum allowed is 9 rows.")
 		return
 	}
 
 	if !functions.IsValidGrid(&board) {
-		fmt.Println("Error: Wrong Input. The provided board violates Sudoku rules.")
+		fmt.Println(`Error: Wrong Input.
+
+This sudoku board breaks the game rules.
+Check for repeated numbers in a row, column or 3x3 box.`)
 		return
 	}
 
 	if !functions.Solve(&board) {
-		fmt.Println("Error: No solution. The provided board cannot be solved.")
+		fmt.Println("Error: No solution found. This Sudoku puzzle cannot be solved.")
 		return
 	}
 

@@ -1,16 +1,21 @@
 # Sudoku Solver (Go)
 
-A Sudoku solver written in Go, using a **recursive backtracking** to find solutions for 9x9 grids. The project features a modular architecture, input validation, and a stylized terminal output.
+A Sudoku solver written in Go, using a **recursive backtracking algorithm** to solve 9×9 Sudoku grids. The project features a modular architecture, input validation, and a stylized terminal output.
 
 
 ## 🚀 Key Features
-* **Backtracking Logic:** Efficiently solves even the most complex Sudoku puzzles by exploring possible paths and retracting upon dead ends.
-* **Flexible Input Handling:** Supports both standard positional arguments (9 rows in order) and explicit row assignments (e.g., 1=53..7....).
+* **Backtracking Logic:** Efficiently solves even the most complex Sudoku puzzles by exploring possible paths and backtracking when dead ends are reached.
+* **Flexible Input Handling:** Supports both standard positional rows (up to 9 rows) and explicit row assignments (e.g., 1=53..7....). Missing rows are treated as empty.
 * **Pre-Processing Validation:** Before solving, the program verifies:
     * Command-line argument count and formatting.
     * Character validity (only `1-9` and `.` are allowed).
     * Initial grid integrity (checking for rule violations in the starting numbers).
 * **Enhanced UI:** Prints the solved board using ASCII borders and highlights the user-provided numbers in **Green** for better readability.
+
+## 🧠 Solver Strategy
+The solver uses a recursive backtracking algorithm to explore possible values.
+If a conflict occurs, the algorithm backtracks and tries alternative values until
+a valid solution is found or all possibilities are exhausted.
 
 
 ## 📁 Project Structure
@@ -28,21 +33,28 @@ The project follows a modular "separation of concerns" approach:
 ```
 
 ## 🛠️ Usage
-To run the program, use the go run command followed by the 9 rows of the Sudoku grid. Use a dot (.) for empty cells.
+Run the program with up to 9 Sudoku rows.
+Use a dot (.) for empty cells.
 
-**Standard Positional Input:**
-go run . "53..7...." "6..195..." ".98....6." "8...6...3" "4..8.3..1" "7...2...6" ".6....28." "...419..5" "....8..79"
+**Standard positional input:**
+go run . "53..7...." "6..195..." ".98....6."
 
-**Row Assignment Input:**
-go run . 1=53..7.... 5=4..8.3..1 (etc.)
+**Row assignment input:**
+go run . 1=53..7.... 5=4..8.3..1
+
+**Mixed input (allowed):**
+go run . "53..7...." 5=4..8.3..1 ".98....6."
 
 
 ## ⚠️ Error Handling
-The program will display `Error` if:
-* The number of row arguments provided is incorrect.
+The program displays clear error messages in the following cases:
+
+* More than 9 rows are provided.
 * Any row does not contain exactly 9 characters.
-* The input contains invalid characters.
-* The starting board is inherently unsolvable or violates Sudoku rules.
+* Invalid characters are used (only numbers 1–9 and . are allowed).
+* A row number assignment is invalid or duplicated.
+* The starting grid violates Sudoku rules (duplicate numbers in a row, column, or 3×3 box).
+* The puzzle has no possible solution.
 
 ## 📝 Authors
 * Dimitrios Mitsios Antonakos #dmitsios
