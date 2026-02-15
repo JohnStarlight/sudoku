@@ -44,33 +44,10 @@ You may also combine both methods`)
 		arg := os.Args[i]
 		if strings.Contains(arg, "=") {
 			parts := strings.SplitN(arg, "=", 2)
-			if len(parts) != 2 {
-				fmt.Println(`Error: Wrong input.
 
-To set a specific row, use this format:
-RowNumber=RowContent
-
-Example:
-1=53..7....
-
-Row number must be between 1 and 9.
-Each row must contain 9 characters.
-Use numbers 1-9 for known cells and . for empty cells.`)
-				return
-			}
-			idx, err := strconv.Atoi(parts[0])
-			if err != nil || idx < 1 || idx > 9 {
-				fmt.Println(`Error: Wrong input.
-
-Row number must be between 1 and 9.
-Example: 1=53..7....`)
-				return
-			}
-			if rowsFilled[idx-1] {
-				fmt.Println("Error: Wrong input. Row", idx, "is already set. Each row can only be entered once.")
-				return
-			}
+			idx, _ := strconv.Atoi(parts[0])
 			rowStr := parts[1]
+
 			for j, ch := range rowStr {
 				board[idx-1][j] = ch
 				if ch != '.' {
@@ -98,21 +75,19 @@ Example: 1=53..7....`)
 			posIdx++
 		}
 	}
-	if posIdx != len(positional) {
-		fmt.Println("Error: Wrong Input. You entered more than 9 rows. Maximum allowed is 9 rows.")
-		return
-	}
 
 	if !functions.IsValidGrid(&board) {
-		fmt.Println(`Error: Wrong Input.
+		fmt.Println(`Error: Wrong input.
 
-This sudoku board breaks the game rules.
+This Sudoku board breaks the game rules.
 Check for repeated numbers in a row, column or 3x3 box.`)
 		return
 	}
 
 	if !functions.Solve(&board) {
-		fmt.Println("Error: No solution found. This Sudoku puzzle cannot be solved.")
+		fmt.Println(`Error: No solution found.
+		
+This Sudoku puzzle cannot be solved.`)
 		return
 	}
 
