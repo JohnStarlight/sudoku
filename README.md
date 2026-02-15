@@ -56,6 +56,9 @@ The program displays clear error messages in the following cases:
 * The starting grid violates Sudoku rules (duplicate numbers in a row, column, or 3×3 box).
 * The puzzle has no possible solution.
 
+## 📜 License
+This project is licensed under the MIT License.
+
 ## 📝 Authors
 * Dimitrios Mitsios Antonakos #dmitsios
 * Alexandros Mylonas #almylonas
