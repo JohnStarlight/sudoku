@@ -37,14 +37,19 @@ Run the program with up to 9 Sudoku rows.
 Use a dot (.) for empty cells.
 
 **Standard positional input:**
+```
 go run . "53..7...." "6..195..." ".98....6."
+```
 
 **Row assignment input:**
+```
 go run . 1=53..7.... 5=4..8.3..1
+```
 
 **Mixed input (allowed):**
+```
 go run . "53..7...." 5=4..8.3..1 ".98....6."
-
+```
 
 ## ⚠️ Error Handling
 The program displays clear error messages in the following cases:

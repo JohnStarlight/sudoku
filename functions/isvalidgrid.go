@@ -1,11 +1,12 @@
 package functions
+
 // isValidGrid verifies that the current board does not
 // already violate Sudoku rules.
 func IsValidGrid(board *[9][9]rune) bool {
-
+	// Check each cell in the grid
 	for row := 0; row < 9; row++ {
 		for col := 0; col < 9; col++ {
-
+			// Get the value at the current cell
 			value := board[row][col]
 
 			// Skip empty cells

@@ -1,4 +1,5 @@
 package functions
+
 // canPlace checks if a value can be placed at (row, col)
 // without breaking Sudoku rules.
 func CanPlace(board *[9][9]rune, row, col int, value rune) bool {
@@ -18,8 +19,7 @@ func CanPlace(board *[9][9]rune, row, col int, value rune) bool {
 	}
 
 	// Find the top-left corner of the 3x3 box
-	startRow := (row / 3) * 3
-	startCol := (col / 3) * 3
+	startRow, startCol := (row/3)*3, (col/3)*3
 
 	// Check the 3x3 box
 	for r := startRow; r < startRow+3; r++ {

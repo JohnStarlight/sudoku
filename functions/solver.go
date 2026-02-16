@@ -1,96 +1,112 @@
 package functions
 
-// Solve attempts to solve the Sudoku board in-place using backtracking.
-// It returns true when a complete valid solution is found, otherwise false.
+// Solve using:
+// - backtracking
+// - MRV (fewest candidates first)
+// - simple readable logic
 func Solve(board *[9][9]rune) bool {
-	for r := 0; r < 9; r++ {
-		for c := 0; c < 9; c++ {
-			if board[r][c] == '.' {
-				for v := '1'; v <= '9'; v++ {
-					if CanPlace(board, r, c, v) {
-						board[r][c] = v
-						if Solve(board) {
-							return true
-						}
-						board[r][c] = '.'
-					}
-				}
-				// no valid value found for this cell -> backtrack
-				return false
-			}
-		}
-	}
-	// no empty cells -> solved
-	return true
+	return dfs(board)
 }
 
-/*
-You can make it dramatically faster with a couple of classic Sudoku-solver upgrades, without changing your overall approach.
-1) Biggest win: choose the next empty cell smarter (MRV)
-Right now you scan top-left to bottom-right and pick the first '.' . That can explode the search.
-Instead, always pick the empty cell with the fewest possible candidates (Minimum Remaining Values). This single change often makes “hard/unsolvable” cases go from “minutes” to “instant”.
-
-Drop-in replacement for Solve
-
-package functions
-
-func Solve(board *[9][9]rune) bool {
+func dfs(board *[9][9]rune) bool {
 	// Find the empty cell with the fewest candidates
-	bestR, bestC := -1, -1
-	bestCount := 10 // more than max possible (9)
+	r, c, candidates, found := findBestCell(board)
 
+	// no empty cells -> solved
+	if !found {
+		return true
+	}
+
+	// no candidates -> dead end
+	if len(candidates) == 0 {
+		return false
+	}
+	// try candidates for this cell
+	for _, v := range candidates {
+		board[r][c] = v
+		// Recurse to solve the rest of the board with this value placed.
+		if dfs(board) {
+			return true
+		}
+		// Backtrack
+		board[r][c] = '.'
+	}
+
+	return false
+}
+
+// ----------------------------------------------------
+// Find empty cell with fewest legal values (MRV)
+// returns row, col, candidates, found
+// ----------------------------------------------------
+func findBestCell(board *[9][9]rune) (int, int, []rune, bool) {
+	bestCount := 10
+	bestR, bestC := -1, -1
+	var bestCandidates []rune
+	// Loop through all cells to find the one with the fewest legal values
 	for r := 0; r < 9; r++ {
 		for c := 0; c < 9; c++ {
 			if board[r][c] != '.' {
 				continue
 			}
-			count := 0
-			for v := '1'; v <= '9'; v++ {
-				if CanPlace(board, r, c, v) {
-					count++
-				}
-			}
-
-			// dead end early: this cell has no legal values
-			if count == 0 {
-				return false
-			}
-
-			if count < bestCount {
-				bestCount = count
+			// Get candidates for this cell
+			cands := getCandidates(board, r, c)
+			// If no legal values, this path is a dead end
+			if len(cands) < bestCount {
+				bestCount = len(cands)
+				bestCandidates = cands
 				bestR, bestC = r, c
+
 				if bestCount == 1 {
-					// can't get better than 1
-					break
+					return bestR, bestC, bestCandidates, true
 				}
 			}
 		}
 	}
-
 	// No empty cells -> solved
 	if bestR == -1 {
-		return true
+		return 0, 0, nil, false
 	}
 
-	// Try candidates for the best cell
-	for v := '1'; v <= '9'; v++ {
-		if CanPlace(board, bestR, bestC, v) {
-			board[bestR][bestC] = v
-			if Solve(board) {
-				return true
-			}
-			board[bestR][bestC] = '.'
+	return bestR, bestC, bestCandidates, true
+}
+
+// ----------------------------------------------------
+// Collect allowed digits once (no repeated checks)
+// ----------------------------------------------------
+func getCandidates(board *[9][9]rune, r, c int) []rune {
+	used := [9]bool{} // index 0 = digit 1
+
+	// row
+	for i := 0; i < 9; i++ {
+		if board[r][i] != '.' {
+			used[board[r][i]-'1'] = true
 		}
 	}
-	return false
+
+	// col
+	for i := 0; i < 9; i++ {
+		if board[i][c] != '.' {
+			used[board[i][c]-'1'] = true
+		}
+	}
+
+	// box
+	br, bc := (r/3)*3, (c/3)*3
+	for i := 0; i < 3; i++ {
+		for j := 0; j < 3; j++ {
+			if board[br+i][bc+j] != '.' {
+				used[board[br+i][bc+j]-'1'] = true
+			}
+		}
+	}
+	// Collect unused digits as candidates
+	var res []rune
+	for i := 0; i < 9; i++ {
+		if !used[i] {
+			res = append(res, rune('1'+i))
+		}
+	}
+
+	return res
 }
-2) Make CanPlace faster (optional but big)
-Your CanPlace scans row+col+box every time. That’s a lot of repeated work.
-Speed-up idea: maintain 3 boolean tables:
-rowUsed[9][10]
-colUsed[9][10]
-boxUsed[9][10]
-Then “can I place?” becomes O(1). This is a bigger refactor, but it’s the next major leap.
-3) Add a quick “constraint propagation” loop (optional)
-Before guessing, repeatedly fill any cell that has only 1 possible value. This reduces branching a lot.
-*/
